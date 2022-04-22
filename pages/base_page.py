@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 import math
 
 
@@ -15,22 +16,30 @@ class BasePage:
         self.browser.get(self.url)
 
     def is_element_present(self, how, what):
+        # Проверка присутствия элемента.
         try:
             self.browser.find_element(how, what)
         except NoSuchElementException:
             return False
         return True
 
+    def is_not_element_present(self, how, what, timeout=4):
+        # Проверка отсутствия элемента.
+        try:
+            WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return True
+
+        return False
+
     def solve_quiz_and_get_code(self):
+        # Переход на alert, вычисление числа и ввод числа.
         WebDriverWait(self.browser, 3).until(EC.alert_is_present())
         alert = self.browser.switch_to.alert
-        print('Переход на первый alert.')
         x = alert.text.split(' ')[2]
         answer = str(math.log(abs((12 * math.sin(float(x))))))
-        print(f'Ввод ответа: {answer}')
         alert.send_keys(answer)
         alert.accept()
-        print('Клик на подтверждение.')
 
 
 '''
