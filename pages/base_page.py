@@ -20,6 +20,10 @@ class BasePage:
         assert self.is_element_present(*BasePageLocators.LOGIN_LINK), \
             'Ссылка для входа и регистрации не найдена!'
 
+    def should_be_authorized_use(self):
+        assert self.is_element_present(*BasePageLocators.USER_ICON),\
+            'Значек пользователя не отоброжается, видимо неавторизованный пользователь!'
+
     def go_to_login_page(self):
         link = self.browser.find_element(*BasePageLocators.LOGIN_LINK)
         link.click()
